@@ -1,0 +1,18 @@
+Requirements:
+1. View jobs 
+2. Apply job
+3. View applied jobs
+4. Send notification to the job poster
+5. Create job posting
+6. search for jobs with filters (role based, company based, location, experience)
+7. Feature to test the applicant
+8. Profile page
+9. Job page
+10. More options
+11. Messaging
+
+
+
+
+https://test-referralportal-api20210514150629.azurewebsites.net/ - server
+
