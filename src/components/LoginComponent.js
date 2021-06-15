@@ -54,7 +54,7 @@ const LoginComponent = ({ Login, Error }) => {
                                         handleHistory();
                                         console.log("Login Component, details : " + details)
                                         dispatch(selectUser({
-                                            "userId_redux": curr_userId,
+                                            "userId": curr_userId,
                                             "userName": details.name
                                         }))
                                     }

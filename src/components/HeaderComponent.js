@@ -1,7 +1,7 @@
 import React from 'react'
 import {HeaderContainer, HeaderLeft, HeaderAvatar, HeaderCenter, HeaderRight} from './Header.Styled'
 import SearchIcon from '@material-ui/icons/Search'
-import {selectUserId_redux, selectUserName, selectUser} from '../features/appSlice'
+import {selectUserId, selectUserName, selectUser} from '../features/appSlice'
 import {useSelector, useDispatch} from 'react-redux'
 import {
     BrowserRouter as Router,
@@ -11,10 +11,10 @@ import {
   } from "react-router-dom";
 
 
-const HeaderComponent = ({logout}) => {
+const HeaderComponent = () => {
 
     const dispatch = useDispatch()
-    const userId = useSelector(selectUserId_redux)
+    const userId = useSelector(selectUserId)
     const userName = useSelector(selectUserName)
 
     const history = useHistory();
@@ -27,9 +27,8 @@ const HeaderComponent = ({logout}) => {
     }
 
     const onLogoutClick = function(){
-        logout();
         dispatch(selectUser({
-            userId_redux: null,
+            userId: null,
             userName : null
         }))
         clearHistory();
@@ -37,7 +36,7 @@ const HeaderComponent = ({logout}) => {
 
     const goToHome = () => {
         dispatch(selectUser({
-            userId_redux: userId,
+            userId: userId,
             userName: userName,
             postjob : false
         }))

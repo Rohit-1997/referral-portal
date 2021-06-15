@@ -4,14 +4,15 @@ import styled from "styled-components";
 import {Grid, TextField, Paper, MenuItem, Button, Typography} from '@material-ui/core';
 import countryList from 'react-select-country-list'
 import { makeStyles } from '@material-ui/core/styles';
-import {selectUserId_redux, selectUserName, selectUser} from '../features/appSlice'
+import {selectUserId, selectUserName, selectUser} from '../features/appSlice'
 import { ContactSupportOutlined } from '@material-ui/icons';
 import axios from "axios";
+import UserPageHOC from './HOC/UserPageHOC';
 
 
 function FeedInput() {
     
-    const userId = useSelector(selectUserId_redux)
+    const userId = useSelector(selectUserId)
 
     const [referralPost, setReferralPost] = useState({ jobTitle: "", userId: userId, location: "", experienceRequired: "", tags: "", company: "", positionOpen: "" })
 
