@@ -10,8 +10,6 @@ import UserPageComponent from "./components/UserPageComponent";
 import AppliedJobsComponent from "./components/AppliedJobsComponent";
 import { Provider } from "react-redux";
 import store from './app/store';
-import { PersistGate } from 'redux-persist/integration/react';
-
 
 function App() {
   const [error, setError] = useState("")
@@ -22,26 +20,26 @@ function App() {
 
   return (
     <div className="App">
-       <Router>
-          <Switch>
-            <Route exact path="/" >
-              <Provider store={store}>
-                <AppBody>
-                  <LoginComponent Error={error}></LoginComponent>
-                </AppBody>
-              </Provider>
-            </Route>
-            <Route exact path="/user/:userId/appliedJobs">
-              <Provider store={store}>
-                <AppliedJobsComponent />
-              </Provider>
-            </Route>
-            <Route exact path="/user/:userId">
-              <Provider store={store}>
-                  <UserPageComponent />
-              </Provider>
-            </Route>
-          </Switch>
+      <Router>
+        <Switch>
+          <Route exact path="/" >
+            <Provider store={store}>
+              <AppBody>
+                <LoginComponent Error={error}></LoginComponent>
+              </AppBody>
+            </Provider>
+          </Route>
+          <Route exact path="/user/:userId/appliedJobs">
+            <Provider store={store}>
+              <AppliedJobsComponent />
+            </Provider>
+          </Route>
+          <Route exact path="/user/:userId">
+            <Provider store={store}>
+              <UserPageComponent />
+            </Provider>
+          </Route>
+        </Switch>
       </Router>
     </div>
   );
@@ -50,7 +48,7 @@ function App() {
 export default App;
 
 
-const AppBody = styled.div `
+const AppBody = styled.div`
 height: 100vh;
 display: flex;
 align-items: center;
@@ -58,7 +56,7 @@ justify-content: center;
 background-color: #67CDD6;
 `;
 
-const MainDiv = styled.div `
+const MainDiv = styled.div`
 height: 100vh;
 display: flex;
 `;

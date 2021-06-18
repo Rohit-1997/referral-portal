@@ -1,7 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 import appReducer from '../features/appSlice';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 import { selectUser, applyJob, wishlistJob, clearWishlist, toggleShowAppliedJobs, fetchAppliedJobs } from '../features/appSlice';
 import { combineReducers } from 'redux';
 
