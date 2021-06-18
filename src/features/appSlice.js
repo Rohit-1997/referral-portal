@@ -60,7 +60,7 @@ export const appSlice = createSlice({
     }
 });
 
-export const {selectUser, applyJob, wishlistJob, clearWishlist, toggleShowAppliedJobs, fetchAppliedJobs} = appSlice.actions;
+export const {selectUser, applyJob, wishlistJob, clearWishlist, toggleShowAppliedJobs} = appSlice.actions;
 export const selectUserId = state => state.app.userId;
 export const selectUserName = state => state.app.userName;
 export const selectJobPosting = state => state.app.postjob;

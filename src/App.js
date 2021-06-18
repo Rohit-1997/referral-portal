@@ -1,40 +1,24 @@
 import styled from "styled-components";
 import LoginComponent from './components/LoginComponent'
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  useHistory
+  Route
 } from "react-router-dom";
 import UserPageComponent from "./components/UserPageComponent";
 import AppliedJobsComponent from "./components/AppliedJobsComponent";
 import { Provider } from "react-redux";
 import store from './app/store';
-import { Store } from "@material-ui/icons";
+import { PersistGate } from 'redux-persist/integration/react';
 
 
 function App() {
-
-  const admin = {
-    username: "Kranthi"
-  }
   const [error, setError] = useState("")
 
-  const history = useHistory();
-
-  const Login = details => {
-    console.log("details logged in with : " + details);
-    
-
-    if (details.name == admin.username) {
-      console.log("logged in")
-    }
-    else {
-      console.log("details do not match")
-      setError("Details do not match")
-    }
-  }
+  useEffect(() => {
+    console.log('The store object: ', store);
+  }, []);
 
   return (
     <div className="App">
@@ -43,18 +27,18 @@ function App() {
             <Route exact path="/" >
               <Provider store={store}>
                 <AppBody>
-                  <LoginComponent Login={Login} Error={error}></LoginComponent>
+                  <LoginComponent Error={error}></LoginComponent>
                 </AppBody>
               </Provider>
             </Route>
-            <Route exact path="/user">
-              <Provider store={store}>
-                <UserPageComponent />
-              </Provider>
-            </Route>
-            <Route exact path="/user/appliedJobs">
+            <Route exact path="/user/:userId/appliedJobs">
               <Provider store={store}>
                 <AppliedJobsComponent />
+              </Provider>
+            </Route>
+            <Route exact path="/user/:userId">
+              <Provider store={store}>
+                  <UserPageComponent />
               </Provider>
             </Route>
           </Switch>

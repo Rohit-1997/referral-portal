@@ -10,66 +10,64 @@ import {
   Route,
   useHistory
 } from "react-router-dom";
+import { getAllUsers, getUser } from '../network/lib/userClient';
+import HistoryHandler from '../utils/HistoryHandler';
 
-const LoginComponent = ({ Login, Error }) => {
+const LoginComponent = ({ Error }) => {
 
     const [details, setDetails] = useState({ name: "", password: ""})
-    const [userId, setUserId] = useState();
 
     const history = useHistory();
     const dispatch = useDispatch()
 
-    const handleHistory = () => {
-        history.push("/user");
-    }
-
-  
 
     const submitHandler = e => {
         e.preventDefault();
         console.log("username : " + details.name)
         var username = details.name
-        var getAllUsers = "https://test-referralportal-api20210514150629.azurewebsites.net/api/users"
 
-        axios.get(getAllUsers)
-        .then(function(res){
-            if(res.status === 200){
-                console.log("Received all users data, looping to get userId for username: " + username)
-                res.data.forEach(element => {
-                    if(element["name"] === username){
-                        console.log("found required user: " + element["userId"])
-                        var curr_userId = element["userId"]
-                        setUserId(curr_userId)
-
-                        console.log("Set userId: " + curr_userId);
-                        if(curr_userId !== ""){
-                            var getUri = "https://test-referralportal-api20210514150629.azurewebsites.net/api/users/" + curr_userId
-                            console.log("GetURI is : " + getUri)
-                
-                            axios.get(getUri) 
-                                .then(function(res) {
-                                    if(res.status === 200){
-                                        console.log(res.data)
-                                        Login(details)
-                                        handleHistory();
-                                        console.log("Login Component, details : " + details)
-                                        dispatch(selectUser({
-                                            "userId": curr_userId,
-                                            "userName": details.name
-                                        }))
-                                    }
-                                });
-                
+        getAllUsers()
+            .then((res) => {
+                if(res.status === 200){
+                    res.data.forEach(element => {
+                        if(element["name"] === username){
+                            console.log("found required user: " + element["userId"])
+                            var curr_userId = element["userId"]
+    
+                            console.log("Set userId: " + curr_userId);
+                            if(curr_userId !== ""){
+                                var getUri = "https://test-referralportal-api20210514150629.azurewebsites.net/api/users/" + curr_userId
+                                console.log("GetURI is : " + getUri)
+                    
+                                getUser(curr_userId)
+                                    .then((res) => {
+                                        if(res.status === 200){
+                                            console.log("Login user data: ", res);
+                                            HistoryHandler.loginUser(history, curr_userId);
+                                            dispatch(selectUser({
+                                                "userId": curr_userId,
+                                                "userName": res.data.name,
+                                                "company": res.data.company
+                                            }))
+    
+                                            // Store in cookie here
+    
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        console.log("Exception in fetching the user: ", error);
+                                    })
+                            }
                         }
-                    }
-                });
-            }
-            else{
-                console.log("The API returned failure response: "+ res.status)
-            }
-        });
-
-       
+                    });
+                }
+                else{
+                    console.log("The API returned failure response: "+ res.status)
+                }
+            })
+            .catch((error) => {
+                console.log("Exception in fetching all users: ", error);
+            })     
     }
 
 

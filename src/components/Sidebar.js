@@ -4,8 +4,10 @@ import {SidebarContainer, ProfileSection, ProfileAvatarSection, ProfileInfoSecti
 import {useSelector, useDispatch} from 'react-redux'
 import { useState, useEffect } from 'react';
 import axios from "axios";
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { selectUser, selectUserName,  selectUserId, selectAppliedJobs, selectCompany, selectWishlistedJobs, selectShowAppliedJobs, toggleShowAppliedJobs, fetchAppliedJobs} from '../features/appSlice';
+import { getAppliedJobsCountClient } from '../network/lib/jobsClient';
+import HistoryHandler from '../utils/HistoryHandler';
 
 function Sidebar() {
     const dispatch = useDispatch()
@@ -16,29 +18,21 @@ function Sidebar() {
     const wishlistedJobs = useSelector(selectWishlistedJobs)
     const showAppliedJobsSelectorVal = useSelector(selectShowAppliedJobs)
     const [appliedJobs, setAppliedJobs] = useState(0)
+    const history = useHistory();
 
 
-    const refreshAppliedJobs = () => {
-        if(userId !== null){
-            var getAllAppliedJobs = "https://test-referralportal-api20210514150629.azurewebsites.net/api/jobapplications/jobs/" + userId;
-
-            // const response = await fetch(getAllAppliedJobs)
-            // const data = await response.json()
-
-
-            axios.get(getAllAppliedJobs)
-                .then(function (res) {
-                    if (res.status === 200) {
-                        var jobsApplied = res.data;
-                        setAppliedJobs(jobsApplied.length)
-                    }
-                });
-        }
-        else{
-            // Need to fetch the userId
-            console.log("The user id in the redux is : " + userId)
-        }
-    }
+    useEffect(() => {
+        getAppliedJobsCountClient(userId)
+            .then((response) => {
+                console.log("the applied jobs count loaded: ", response, company);
+                if (response != null && response.data != null)  {
+                    setAppliedJobs(response.data.length);
+                }
+            })
+            .catch((error) => {
+                console.log("Exception in applied jobs count: ", error);
+            })
+    }, [userId, userAppliedJobs])
     
     const handlePostJob = () => {
         dispatch(selectUser({
@@ -50,9 +44,8 @@ function Sidebar() {
     }
 
     const showAppliedJobs = () => {
-        dispatch(toggleShowAppliedJobs())
         console.log("Showing applied job")
-        console.log(showAppliedJobsSelectorVal)
+        HistoryHandler.showAppliedJobs(history, userId);
     }
 
     
@@ -69,9 +62,6 @@ function Sidebar() {
             </ProfileSection>
             <hr/>
             <NavigationSection>
-                {
-                    refreshAppliedJobs()
-                }
                 <NavigationSectionItem>
                     <p>Create Job Posting</p>
                     <CreateIcon onClick={handlePostJob} style={{color: "#3E6375", fontSize:"24px", marginRight: "10px", cursor: "pointer" }}/>
@@ -79,13 +69,11 @@ function Sidebar() {
             </NavigationSection>
             <hr/>
             <NavigationSection>
-                <Link to="/user/appliedJobs">
-                <NavigationSectionItem>
+                <NavigationSectionItem onClick={showAppliedJobs}>
                     <p>Applied Jobs</p>
                     <p style={{color: "#0081CB", fontSize:"12px", marginRight: "10px"  }}>{appliedJobs}</p>
                 </NavigationSectionItem>
-                </Link>
-
+                
                 <NavigationSectionItem>
                     <p>Wishlist</p>
                     <p style={{color: "#0081CB", fontSize:"12px", marginRight: "10px" }}>{wishlistedJobs}</p>

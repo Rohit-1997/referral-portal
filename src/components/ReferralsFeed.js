@@ -8,7 +8,8 @@ import axios from "axios";
 import { ContactSupportOutlined } from '@material-ui/icons';
 import { Grid } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import ReferralCard from './ReferralCard'
+import ReferralCard from './ReferralCard';
+import { getAllJobReferrals } from '../network/lib/jobsClient';
 
 const useStyles = makeStyles({
     gridContainer: {
@@ -19,25 +20,20 @@ const useStyles = makeStyles({
 
 
 function ReferralsFeed() {
-    const [referrals, setReferrals] = useState([])
+    const [referrals, setReferrals] = useState([]);
     const classes = useStyles();
 
-    useEffect(async () => {
-        var getAllJobReferrals = "https://test-referralportal-api20210514150629.azurewebsites.net/api/jobreferrals";
-
-        const response = await fetch(getAllJobReferrals)
-        const data = await response.json()
-
-
-        axios.get(getAllJobReferrals)
-            .then(function (res) {
+    useEffect(() => {
+        getAllJobReferrals()
+            .then((res) => {
                 if (res.status === 200) {
                     var referrals_received = res.data;
                     setReferrals(referrals_received)
                 }
-            });
-        console.log("referrals");
-        console.log(referrals);
+            })
+            .catch((error) => {
+                console.log("Exception in fetching job feed: ", error);
+            })
     }, []);
 
     return (
