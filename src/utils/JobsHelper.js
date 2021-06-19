@@ -1,4 +1,4 @@
-import { applyJob, getAppliedJobsCountClient } from "../network/lib/jobsClient";
+import { applyJob, getAppliedJobs } from "../network/lib/jobsClient";
 
 /**
  * Helper class for Jobs management that implements a singleton pattern
@@ -30,18 +30,30 @@ class JobsHelper {
 
     /** To load the jobs applied by the user */
     loadAppliedJobs(userId) {
-        if (userId == null) return;
-        getAppliedJobsCountClient(userId)
-            .then((response) => {
-                console.log("JobsHelper :: Loaded jobs successfully ", response);
-                if (response != null && response.data != null) this.appliedJobsCount = response.data.length;
-                else console.log("JobsHelper :: Loaded Jobs But response is null");
-                console.log("Testing the counter value: ", this.appliedJobsCount);
-            })
-            .catch((error) => {
-                console.log("JobsHelper :: Exception in loading the jobs data: ", error);
-            })
+        return new Promise((resolve, reject) => {
+            if (userId == null) reject("user Id passed is null");
+            else {
+                getAppliedJobs(userId)
+                .then((response) => {
+                    console.log("JobsHelper :: Loaded jobs successfully ", response);
+                    if (response != null && response.data != null) {
+                        this.appliedJobsCount = response.data.length;
+                        console.log("Testing the counter value: ", this.appliedJobsCount);
+                        resolve(response);
+                    }
+                    else {
+                        console.log("JobsHelper :: Loaded Jobs But response is null");
+                        reject("Got response null from the api");
+                    }
+                })
+                .catch((error) => {
+                    console.log("JobsHelper :: Exception in loading the jobs data: ", error);
+                    reject(error);
+                })
+            }
+        })
     }
+
 }
 
 const userJobsData = new JobsHelper();

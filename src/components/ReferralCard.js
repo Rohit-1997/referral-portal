@@ -3,25 +3,20 @@ import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import { CardHeader } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
 import { red } from '@material-ui/core/colors';
 import { CardMedia } from '@material-ui/core';
 import {useSelector, useDispatch} from 'react-redux';
 import { selectAppliedJobs, applyJob } from '../features/appSlice';
-
-
 import mslogo from '../images/mslogo.jpg';
 import amazonlogo from '../images/Amazon logo.png'
 import googlelogo from '../images/google_logo.png'
 import netflixlogo from '../images/netflix_logo.png'
-import axios from 'axios';
+import RequestResponseHelper from '../utils/RequestResponseHelper';
 
 const useStyles = makeStyles({
     root: {
@@ -78,14 +73,20 @@ export default function ReferralCard({ Referral }) {
     const handleApplyIconClick = () => {
         console.log("Favorite Icon handler called", Referral);
         var postJobObject = Referral;
-        axios.post("https://test-referralportal-api20210514150629.azurewebsites.net/api/jobapplications/apply", postJobObject)
-            .then((response) => {
-                console.log("Job post success");
-                alert("Job Posted successfully");
-                dispatch(applyJob());
 
+        applyJob(postJobObject)
+            .then((response) => {
+                if (RequestResponseHelper.isSuccess(response)) {
+                    console.log("Job post success");
+                    alert("Job Posted successfully");
+                    dispatch(applyJob());
+                } else if (RequestResponseHelper.isUserError(response)) {
+                    console.log("Apply Jobs failed :: UserError", response);
+                } else if (RequestResponseHelper.isServerError(response)) {
+                    console.log("Apply Jobs failed :: ServerError", response);
+                }
             })
-            .catch((response) => {
+            .catch((error) => {
                 console.log("failure to post the job");
             })
     }

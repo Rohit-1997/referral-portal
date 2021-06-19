@@ -53,7 +53,7 @@ height: 100vh;
 display: flex;
 align-items: center;
 justify-content: center;
-background-color: #67CDD6;
+background-color: var(--app-color);
 `;
 
 const MainDiv = styled.div`

@@ -1,11 +1,6 @@
 import React from 'react'
-import styled from 'styled-components'
-import FeedInput from './FeedInput'
-import JobReferral from './JobReferral'
-import UserPageHOC from './HOC/UserPageHOC';
+import styled from 'styled-components';
 import { useState, useEffect } from 'react';
-import axios from "axios";
-import { ContactSupportOutlined } from '@material-ui/icons';
 import { Grid } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import ReferralCard from './ReferralCard';

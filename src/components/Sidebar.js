@@ -3,12 +3,11 @@ import CreateIcon from '@material-ui/icons/Create';
 import { SidebarContainer, ProfileSection, ProfileAvatarSection, ProfileInfoSection, ProfileAvatar, NavigationSection, NavigationSectionItem } from './Sidebar.styled'
 import { useSelector, useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react';
-import axios from "axios";
 import { useHistory } from 'react-router-dom';
 import { selectUser, selectUserName, selectUserId, selectAppliedJobs, selectCompany, selectWishlistedJobs, selectShowAppliedJobs, toggleShowAppliedJobs, fetchAppliedJobs } from '../features/appSlice';
-import { getAppliedJobsCountClient } from '../network/lib/jobsClient';
 import HistoryHandler from '../utils/HistoryHandler';
 import userJobsData from "../utils/JobsHelper";
+import { setAppliedJobsCount } from "../features/appSlice";
 
 function Sidebar() {
     const dispatch = useDispatch()
@@ -17,20 +16,21 @@ function Sidebar() {
     const userAppliedJobs = useSelector(selectAppliedJobs)
     const company = useSelector(selectCompany)
     const wishlistedJobs = useSelector(selectWishlistedJobs)
-    const showAppliedJobsSelectorVal = useSelector(selectShowAppliedJobs)
-    const [appliedJobs, setAppliedJobs] = useState(0)
     const history = useHistory();
 
 
     useEffect(() => {
-        userJobsData.loadAppliedJobs(userId);
+       userJobsData.loadAppliedJobs(userId)
+        .then((result) => {
+            console.log("Double promise return : ", result);
+            dispatch(setAppliedJobsCount({
+                "appliedJobsCount": result.data.length
+            }));
+        })
+        .catch((error) => {
+            console.log("Double promise fails: ", error);
+        })
     }, [userId])
-
-
-    useEffect(() => {
-        console.log("Class listener for appliedJobs count is working", userJobsData.appliedJobsCount);
-        setAppliedJobs(userJobsData.appliedJobsCount);
-    }, [userJobsData.appliedJobsCount])
 
 
     const handlePostJob = () => {
@@ -70,7 +70,7 @@ function Sidebar() {
             <NavigationSection>
                 <NavigationSectionItem onClick={showAppliedJobs}>
                     <p>Applied Jobs</p>
-                    <p style={{ color: "#0081CB", fontSize: "12px", marginRight: "10px" }}>{appliedJobs}</p>
+                    <p style={{ color: "#0081CB", fontSize: "12px", marginRight: "10px" }}>{userAppliedJobs}</p>
                 </NavigationSectionItem>
 
                 <NavigationSectionItem>

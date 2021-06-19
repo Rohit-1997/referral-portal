@@ -5,11 +5,12 @@ import CardContent from "@material-ui/core/CardContent";
 import Card from "@material-ui/core/Card";
 import styled from "styled-components";
 import {useSelector, useDispatch} from 'react-redux'
-import {selectUserId, selectUserName, selectUser, selectCompany, clearWishlist} from '../features/appSlice'
+import {selectUserId} from '../features/appSlice'
 import { useState, useEffect } from 'react';
-import axios from "axios";
 import { Grid } from '@material-ui/core'
 import UserPageHOC from './HOC/UserPageHOC';
+import userJobsData from "../utils/JobsHelper";
+import RequestResponseHelper from "../utils/RequestResponseHelper";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -46,38 +47,23 @@ const useStyles = makeStyles((theme) => ({
 
 function AppliedJobsComponent() {
 
-const dispatch = useDispatch()
-const userId = useSelector(selectUserId)
-const classes = useStyles();
-const theme = useTheme();
-const [appliedJobs, setAppliedJobs] = useState([])
+    const userId = useSelector(selectUserId)
+    const classes = useStyles();
+    const [appliedJobs, setAppliedJobs] = useState([])
 
-    useEffect(async () => {
-        // {
-        //     "jobId": "71ac4d80-477d-442a-9546-02b8f9a3df44",
-        //     "jobTitle": "React ",
-        //     "location": "Australia",
-        //     "experienceRequired": 2,
-        //     "tags": "",
-        //     "company": "Amazon",
-        //     "positionOpen": 3
-        // }
-
-        var getAllAppliedJobs = "https://test-referralportal-api20210514150629.azurewebsites.net/api/jobapplications/jobs/" + userId;
-
-        const response = await fetch(getAllAppliedJobs)
-        const data = await response.json()
-
-
-        axios.get(getAllAppliedJobs)
-            .then(function (res) {
-                if (res.status === 200) {
-                    var jobsApplied = res.data;
-                    setAppliedJobs(jobsApplied)
+    useEffect(() => {
+        userJobsData.loadAppliedJobs(userId)
+            .then((response) => {
+                console.log("Double promise return : ", response);
+                if (RequestResponseHelper.isSuccess(response)) {
+                    let jobsApplied = response.data;
+                    setAppliedJobs(jobsApplied);
                 }
-            });
-        console.log("appliedjobs");
-        console.log(appliedJobs);
+
+            })
+            .catch((error) => {
+                console.log("Double promise fails: ", error);
+            })
     }, [])
 
     

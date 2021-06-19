@@ -3,9 +3,12 @@
   padding: 0;
   box-sizing: border-box;
   font-family: Montserrat, sans-serif;
-  --app-color: #15484D;
-  --font-color: #CADBC2;
-  --btn-background: #208475; 
+  --app-color:#8F98E2;
+  --font-color: #292929;
+  --btn-background: #208475;
+  --theme-light: #E1E3F7;
+  --theme-dark: #A2A3E9;
+  --font-light: #F9F1F6;
 }
 
 input, button{

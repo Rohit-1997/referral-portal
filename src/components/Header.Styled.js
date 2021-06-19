@@ -9,7 +9,7 @@ width: 100%;
 align-items: center;
 justify-content: space-between;
 padding: 10px 0px;
-background-color: var(--app-color);
+background-color: var(--theme-light);
 color: white;
 border-radius: 5px;
 box-shadow: 1px 1px 3px black;
@@ -74,7 +74,7 @@ display: flex;
 align-items: flex-end;
 
 > button {
-    background-color: var(--btn-background);
+    background-color: var(--theme-dark);
     margin-left: auto;
     margin-right: 20px;
     color: var(--font-color);

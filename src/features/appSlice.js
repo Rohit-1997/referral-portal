@@ -1,6 +1,4 @@
 import {createSlice} from '@reduxjs/toolkit'
-import { StaticRouter } from 'react-router';
-import axios from "axios";
 
 
 export const appSlice = createSlice({
@@ -29,6 +27,9 @@ export const appSlice = createSlice({
         applyJob: (state, action) => {
             state.appliedJobs = state.appliedJobs + 1;
         },
+        setAppliedJobsCount: (state, action) => {
+            state.appliedJobs = action.payload.appliedJobsCount;
+        },
         wishlistJob: (state, action) => {
             if(!state.wishlistedJobIds.includes(action.payload.JobId)){
                 state.wishlistedJobIds.push(action.payload.JobId)
@@ -41,26 +42,11 @@ export const appSlice = createSlice({
         },
         toggleShowAppliedJobs : (state, action) => {
             state.showAppliedJobs = !state.showAppliedJobs;
-        },
-        fetchAppliedJobs : async (state, action) => {
-            var getAllAppliedJobs = "https://test-referralportal-api20210514150629.azurewebsites.net/api/jobapplications/jobs/" + state.userId;
-
-            const response = await fetch(getAllAppliedJobs)
-            const data = await response.json()
-
-
-            axios.get(getAllAppliedJobs)
-                .then(function (res) {
-                    if (res.status === 200) {
-                        var jobsApplied = res.data;
-                        state.appliedJobs = jobsApplied.length
-                    }
-                });
         }
     }
 });
 
-export const {selectUser, applyJob, wishlistJob, clearWishlist, toggleShowAppliedJobs} = appSlice.actions;
+export const {selectUser, applyJob, wishlistJob, clearWishlist, toggleShowAppliedJobs, setAppliedJobsCount} = appSlice.actions;
 export const selectUserId = state => state.app.userId;
 export const selectUserName = state => state.app.userName;
 export const selectJobPosting = state => state.app.postjob;

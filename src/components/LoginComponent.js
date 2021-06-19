@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import {useDispatch} from 'react-redux';
 import styled from "styled-components";
-import axios from "axios";
-import xtype from "xtypejs";
 import {selectUser} from '../features/appSlice'
 import {
   BrowserRouter as Router,
@@ -74,7 +72,7 @@ const LoginComponent = ({ Error }) => {
     return (
         <Form onSubmit={submitHandler}>
             <FormInner>
-                <h2>Login!</h2>
+                <h2>Company Name</h2>
                 {(Error != "") ?
                     (<div className="Error">
                         {Error}
@@ -102,7 +100,7 @@ const FormInner = styled.div`
     z-index: 2;
 
     > h2{
-        color: #CADBC2;
+        color: var(--font-dark);
         font-size: 28px;
         font-weight: 500;
         margin-bottom: 30px;
@@ -113,11 +111,13 @@ const FormInner = styled.div`
         display: inline-block;
         padding: 10px 50px;
         border-radius: 8px;
-        background-color: #208475; 
+        background-color: var(--theme-dark); 
         transition: 0.4s;
-        color: #CADBC2;
+        color: var(--font-light);
         font-weight: 700;
         cursor: pointer;
+        width: 100%;
+        margin-top: 5px;
     }
 
     > button:hover{
@@ -178,7 +178,7 @@ const FormGroup = styled.div`
 const Form = styled.form`
     display: block;
     position: relative;
-
+    text-align: center;
     :after {
         content: '';
         display: block;
@@ -189,7 +189,7 @@ const Form = styled.form`
         left: -5px;
         z-index: 1;
         border-radius: 30px;
-        background-image: linear-gradient(to bottom right, #217076, #011627);
+        background-color: var(--theme-light);
     }
 `;
 

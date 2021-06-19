@@ -4,10 +4,8 @@ import styled from "styled-components";
 import {Grid, TextField, Paper, MenuItem, Button, Typography} from '@material-ui/core';
 import countryList from 'react-select-country-list'
 import { makeStyles } from '@material-ui/core/styles';
-import {selectUserId, selectUserName, selectUser} from '../features/appSlice'
-import { ContactSupportOutlined } from '@material-ui/icons';
-import axios from "axios";
-import UserPageHOC from './HOC/UserPageHOC';
+import {selectUserId, selectUserName, selectUser} from '../features/appSlice';
+import { postJobReferrals } from "../network/lib/jobsClient";
 
 
 function FeedInput() {
@@ -18,7 +16,7 @@ function FeedInput() {
 
     const postReferral = (e) => {
         e.preventDefault();
-        console.log("posting job referral")
+        console.log("posting job referral");
         const requestBody = 
         {
             "jobTitle": referralPost.jobTitle,
@@ -29,31 +27,15 @@ function FeedInput() {
             "company": referralPost.company,
             "positionOpen": parseInt(referralPost.positionOpen)
         }
-        const postUrl = "https://test-referralportal-api20210514150629.azurewebsites.net/api/jobreferrals";
-        const headers = {'Content-Type': 'application/json'};
         console.log(requestBody)
-        axios({
-            method: 'post',
-            url: postUrl,
-            data: requestBody,
-            headers: headers
-          }).then((response) => {
-              console.log("response is :")
-              console.log(response)
-          }).catch((exception) => {
-              console.log("Exception in posting the jobs: ", exception);
-          });
 
-        // const postData = { data: requestBody };
-        // axios.post(postUrl,postData,).then((response) => {
-        //     console.log("Response is: ", response);
-        // })
-
-    }
-
-    const handleChange = event => {
-        console.log("handling change")
-        console.log(referralPost)
+        postJobReferrals(requestBody)
+            .then((response) => {
+                console.log("Job Posted Successfully: ", response);
+            })
+            .catch((error) => {
+                console.log("Exception in posting the job referral", error);
+            })
     }
 
     const PaperStyle = {

@@ -1,6 +1,6 @@
 import axiosClient from "../apiClient";
 
-export function getAppliedJobsCountClient(userId) {
+export function getAppliedJobs(userId) {
     return axiosClient.get(`/jobapplications/jobs/${userId}`);
 }
 
@@ -10,4 +10,8 @@ export function getAllJobReferrals() {
 
 export function applyJob(jobData) {
     return axiosClient.post("/jobapplications/apply", jobData);
+}
+
+export function postJobReferrals(jobData) {
+    return axiosClient.post("/jobreferrals", jobData);
 }
