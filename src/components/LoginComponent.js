@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import {useDispatch} from 'react-redux';
 import styled from "styled-components";
+import axios from "axios";
+import xtype from "xtypejs";
 import {selectUser} from '../features/appSlice'
 import {
   BrowserRouter as Router,
@@ -8,64 +10,75 @@ import {
   Route,
   useHistory
 } from "react-router-dom";
-import { getAllUsers, getUser } from '../network/lib/userClient';
-import HistoryHandler from '../utils/HistoryHandler';
 
-const LoginComponent = ({ Error }) => {
+const LoginComponent = ({ Login, Error }) => {
 
-    const [details, setDetails] = useState({ name: "", password: ""})
+    const [details, setDetails] = useState({
+         name: "", 
+         password: "",
+         position: "",
+         company: "",
+         experience: ""
+    })
+    const [userId, setUserId] = useState();
 
     const history = useHistory();
     const dispatch = useDispatch()
 
+    const handleHistory = () => {
+        history.push("/user");
+    }
+
+  
 
     const submitHandler = e => {
         e.preventDefault();
         console.log("username : " + details.name)
         var username = details.name
+        var getAllUsers = "https://test-referralportal-api20210514150629.azurewebsites.net/api/users"
 
-        getAllUsers()
-            .then((res) => {
-                if(res.status === 200){
-                    res.data.forEach(element => {
-                        if(element["name"] === username){
-                            console.log("found required user: " + element["userId"])
-                            var curr_userId = element["userId"]
-    
-                            console.log("Set userId: " + curr_userId);
-                            if(curr_userId !== ""){
-                                var getUri = "https://test-referralportal-api20210514150629.azurewebsites.net/api/users/" + curr_userId
-                                console.log("GetURI is : " + getUri)
-                    
-                                getUser(curr_userId)
-                                    .then((res) => {
-                                        if(res.status === 200){
-                                            console.log("Login user data: ", res);
-                                            HistoryHandler.loginUser(history, curr_userId);
-                                            dispatch(selectUser({
-                                                "userId": curr_userId,
-                                                "userName": res.data.name,
-                                                "company": res.data.company
-                                            }))
-    
-                                            // Store in cookie here
-    
-                                        }
-                                    })
-                                    .catch((error) => {
-                                        console.log("Exception in fetching the user: ", error);
-                                    })
-                            }
+        axios.get(getAllUsers)
+        .then(function(res){
+            if(res.status === 200){
+                console.log("Received all users data, looping to get userId for username: " + username)
+                res.data.forEach(element => {
+                    if(element["name"] === username){
+                        console.log("found required user: " + element["userId"])
+                        var curr_userId = element["userId"]
+                        setUserId(curr_userId)
+
+                        console.log("Set userId: " + curr_userId);
+                        if(curr_userId !== ""){
+                            var getUri = "https://test-referralportal-api20210514150629.azurewebsites.net/api/users/" + curr_userId
+                            console.log("GetURI is : " + getUri)
+                
+                            axios.get(getUri) 
+                                .then(function(res) {
+                                    if(res.status === 200){
+                                        console.log("User data : " + res.data)
+                                        console.log(res.data)
+                                        var userDetails = res.data;
+                                        Login(details)
+                                        handleHistory();
+                                        console.log("Login Component, details : " + details)
+                                        dispatch(selectUser({
+                                            "userId": curr_userId,
+                                            "userName": details.name,
+                                            "company" : userDetails["company"]
+                                        }))
+                                    }
+                                });
+                
                         }
-                    });
-                }
-                else{
-                    console.log("The API returned failure response: "+ res.status)
-                }
-            })
-            .catch((error) => {
-                console.log("Exception in fetching all users: ", error);
-            })     
+                    }
+                });
+            }
+            else{
+                console.log("The API returned failure response: "+ res.status)
+            }
+        });
+
+       
     }
 
 
@@ -73,6 +86,10 @@ const LoginComponent = ({ Error }) => {
         <Form onSubmit={submitHandler}>
             <FormInner>
                 <h2>Company Name</h2>
+            </FormInner>
+
+            <FormInner>
+                <h2>Login</h2>
                 {(Error != "") ?
                     (<div className="Error">
                         {Error}
@@ -84,7 +101,16 @@ const LoginComponent = ({ Error }) => {
                 <FormGroup>
                     <input type="password" name="password" id="password" onChange={e => setDetails({ ...details, password: e.target.value })} value={details.password} placeholder="password"/>
                 </FormGroup>
-                <button type="submit">Login</button>
+                <FormGroup>
+                    <p>Forgot Password ?</p>
+                </FormGroup>
+                <FormGroup>
+                    <button type="submit">Login</button>
+                </FormGroup>
+            </FormInner>
+
+            <FormInner>
+                <h4>Create your account here</h4>
             </FormInner>
         </Form>
     )
@@ -98,12 +124,22 @@ const FormInner = styled.div`
     background-color: transparent;
     padding: 30px;
     z-index: 2;
+    width: 30vw;
 
     > h2{
-        color: var(--font-dark);
+        color: #CADBC2;
         font-size: 28px;
         font-weight: 500;
-        margin-bottom: 30px;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+
+    > h4{
+        color: #CADBC2;
+        font-size: 18px;
+        font-weight: 500;
+        text-align: center;
+        cursor : pointer;
     }
     
 
@@ -111,13 +147,11 @@ const FormInner = styled.div`
         display: inline-block;
         padding: 10px 50px;
         border-radius: 8px;
-        background-color: var(--theme-dark); 
+        background-color: #208475; 
         transition: 0.4s;
-        color: var(--font-light);
+        color: #CADBC2;
         font-weight: 700;
         cursor: pointer;
-        width: 100%;
-        margin-top: 5px;
     }
 
     > button:hover{
@@ -127,7 +161,8 @@ const FormInner = styled.div`
 const FormGroup = styled.div`
     display: block;
     width: 15vw;
-    margin-bottom: 15px;
+    margin: auto;
+    margin-bottom: 10px;
 
     > label {
         margin-right: 10px;
@@ -140,6 +175,12 @@ const FormGroup = styled.div`
     > label:focus-within {
         color: #FE4880;
     } 
+
+    > p {
+        text-align: right;
+        color: white;
+        cursor : pointer;
+    }
 
      > input {
         width: 100%;
@@ -154,9 +195,20 @@ const FormGroup = styled.div`
         box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
     }
 
-    
+    > button {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background-color: #CADBC2; /* linear-gradient(to right, #FFCE00 50%, #FFCE00 50%, #FE4880);*/
+    background-size: 200%;
+    background-position: 0%;
+    transition: 0.4s;
+    color: #FFF;
+    font-weight: 700;
+    cursor: pointer;
+    }
 
-    > input[type="submit"]{
+    /* > input[type="submit"]{
     display: inline-block;
     padding: 10px 15px;
     border-radius: 8px;
@@ -167,7 +219,7 @@ const FormGroup = styled.div`
     color: #FFF;
     font-weight: 700;
     cursor: pointer;
-    }
+    } */
 
 
     >input[type="submit"]:hover{
@@ -178,7 +230,7 @@ const FormGroup = styled.div`
 const Form = styled.form`
     display: block;
     position: relative;
-    text-align: center;
+
     :after {
         content: '';
         display: block;
@@ -189,7 +241,7 @@ const Form = styled.form`
         left: -5px;
         z-index: 1;
         border-radius: 30px;
-        background-color: var(--theme-light);
+        background-image: linear-gradient(to bottom right, #217076, #011627);
     }
 `;
 
